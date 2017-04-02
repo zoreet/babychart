@@ -1,0 +1,150 @@
+body {
+	font: 16px/1.2 BlinkMacSystemFont, -apple-system, “Segoe UI”, Roboto, Helvetica, Arial, sans-serif;
+	padding: 0;
+	margin: 0;
+}
+.sticky {
+	position: -webkit-sticky;
+	position: -moz-sticky;
+	position: -ms-sticky;
+	position: sticky;
+}
+.editing .sticky {
+	position: fixed;
+}
+.template {
+	display: none;
+}
+
+#header {
+    background: #6a39ff;
+    overflow: hidden;
+	padding: 20px 10px;
+	line-height: 40px;
+}
+h1 {
+    margin: 0;
+    color: #ffd4c4;
+	text-transform: capitalize;
+	text-align: center;
+	float: left;
+}
+#add-day {
+	float: right;
+    background-color: rgba(255,255,255,.5);
+    border-radius: 50%;
+    color: #6a39ff;
+    font-size: 24px;
+    height: 30px;
+    line-height: 26px;
+    width: 30px;
+    text-align: center;
+    margin-top: 5px;
+}
+
+
+.panel {
+	padding: 0 10px 10px;
+}
+
+
+.day {
+	margin-bottom: 40px;
+}
+
+
+.day-top {
+	top: 0;
+	background-color: #fff;
+	z-index: 10;
+}
+.day-top h2 {
+	margin: 0;
+	padding: 10px 0;
+	font-size: 1.2em;
+}
+.day-head {
+	font-size: 1em;
+	border-top: 1px solid #dedede;
+	font-weight: bold;
+}
+
+.day-row {
+	display: flex;
+	border-left: 1px solid #dedede;
+}
+.day-row:nth-child(even) {
+	background-color: #f7f7f7;
+}
+.day-cell {
+	height: 20px;
+	line-height: 20px;
+	padding: 5px 0;
+	border-right: 1px solid #dedede;
+	border-bottom: 1px solid #dedede;
+	text-align: center;
+	font-size: 16px;
+}
+
+.day-cell--time,
+.day-cell--pipi,
+.day-cell--caca {
+	flex: 0 0 auto;
+	font-size: 16px;
+	width: 40px;
+}
+
+.day-row:not(.day-head) .day-cell--time {
+	font-size: 12px;
+}
+.day-cell--pumped,
+.day-cell--fed,
+.day-cell--formula {
+	flex: 1 1 auto;
+	width: calc(33vw); //47 is one third of all borders' width, body padding and fixed cells' width
+}
+
+.day-cell--pipi.js-toggle-visible:after {
+	content: "💧";
+}
+.day-cell--caca.js-toggle-visible:after {
+	content: "💩";
+}
+
+
+
+.day-stats {
+	/* display: flex; */
+	/* justify-content: space-between; */
+	padding-top: 10px;
+}
+.day-stats--row {
+	margin-bottom: 5px;
+}
+.day-stats__editable {
+    border-bottom: 1px solid;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    overflow: hidden;
+    text-align: right;
+    vertical-align: top;
+    white-space: nowrap;
+    padding: 0 5px;
+}
+.weight {
+    min-width: 40px;
+}
+/******************************************************************************
+JS
+.*****************************************************************************/
+.js-toggle-visible {
+	cursor: pointer;
+}
+.js-toggle-visible:after {
+	display: block;
+	opacity: 0;
+}
+.is-visible:after {
+	opacity: 1;
+}
