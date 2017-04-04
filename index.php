@@ -135,15 +135,16 @@
 							"caca":false
 						});
 					}
+					var newTitle = self.days()[0].title+1;
 					self.days.unshift(
 						new Day({
-							title: 'asd',
+							title: newTitle,
 							bottlesPerDay: 8,
 							weight: 3780,
 							hours: hours
-						}),
-						self
+						})
 					);
+
 					saveData(self.days());
 				}
 			}
