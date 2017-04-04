@@ -18,13 +18,13 @@
 		<a href="#">Stats</a>
 	</nav> -->
 	<div id="header">
-		<div id="add-day">+</div>
+		<div id="add-day" data-bind="click: addDay">+</div>
 		<h1><? echo $_GET['id'] ?></h1>
 	</div>
-	<section id="chart" class="panel">
-		<div class="day template" data-id="YYYYMMDD">
+	<section id="chart" class="panel" data-bind="foreach: days">
+		<div class="day">
 			<div class="day-top sticky">
-				<h2></h2>
+				<h2>Day <span data-bind="text: title"></span></h2>
 				<div class="day-head day-row">
 					<div class="day-cell day-cell--time">⏰</div>
 					<div class="day-cell day-cell--pumped">Pumped</div>
@@ -34,26 +34,26 @@
 					<div class="day-cell day-cell--caca">💩</div>
 				</div>
 			</div>
-			<div class="day-body">
+			<div class="day-body" data-bind="foreach: hours">
 				<div class="day-row">
-					<div class="day-cell day-cell--time">1</div>
-					<div class="day-cell day-cell--pumped contenteditable" contenteditable></div>
-					<div class="day-cell day-cell--fed contenteditable" contenteditable></div>
-					<div class="day-cell day-cell--formula contenteditable" contenteditable></div>
-					<div class="day-cell day-cell--pipi js-toggle-visible"></div>
-					<div class="day-cell day-cell--caca js-toggle-visible"></div>
+					<div class="day-cell day-cell--time" data-bind="text: time"></div>
+					<div class="day-cell day-cell--pumped"><input class="number" step="1" type="number" data-bind="value: pumped, event: { change: saveData }" /></div>
+					<div class="day-cell day-cell--fed"><input class="number" step="1" type="number" data-bind="value: fed, event: { change: saveData }" /></div>
+					<div class="day-cell day-cell--formula"><input class="number" step="1" type="number" data-bind="value: formula, event: { change: saveData }" /></div>
+					<div class="day-cell day-cell--pipi"><input type="checkbox" class="checkbox" data-bind="checked: pipi, event: { change: saveData }" /><span>💧<span></div>
+					<div class="day-cell day-cell--caca"><input type="checkbox" class="checkbox" data-bind="checked: caca, event: { change: saveData }" /><span>💩<span></div>
 				</div>
 			</div>
 			<div class="day-foot sticky">
 				<div class="day-stats">
 					<div class="day-stats--row">
-						Weight: <span class="weight day-stats__editable" contenteditable>3780</span>g
+						Weight: <input type="number" step="1" data-bind="value: weight, event: { change: saveData }" />
 					</div>
 					<div class="day-stats--row">
-						Bottles per day: <span class="noBottles day-stats__editable" contenteditable>8</span> @ <span class="mlPerBottle">70</span>ml 🍼
+						Bottles per day: <input type="number" step="1" data-bind="value: bottlesPerDay, event: { change: saveData }" /> @ <span data-bind="text: mlPerBottle"></span>ml 🍼
 					</div>
 					<div class="day-stats--row">
-				  		Status: <span class="mlAte">0ml out of 0ml</span>
+						Status: <span data-bind="text: totalFed"></span>ml out of <span data-bind="text: dailyFeedGoal"></span>ml</span>
 					</div>
 				</div>
 			</div>
@@ -62,74 +62,113 @@
 </body>
 	<script type="text/javascript" src="/static/js/prefixfree.min.js"></script>
 	<script type="text/javascript" src="/static/js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-debug.js"></script>
 	<script type="text/javascript">
 
+		var days;
 		$(function(){
-
-			$('body')
-				.on('click', '.js-toggle-visible', function(e){
-					$(this).toggleClass('is-visible')
-					saveData();
-				})
-				.on('blur', '.day-stats, .contenteditable', function(e){
-					updateStats(e);
-				});
-			$('#add-day').click(addDay);
-			loadData('<? echo $_GET['id'] ?>');
+			loadData("<? echo $_GET['id'] ?>");
 		});
 
 
 
+		var initTemplate = function( data ) {
+			var Day = function(data, root) {
+				var self = this;
+				self.title = data.title;
+				self.hours = ko.observableArray($.map(data.hours, function(entry){
+					return new Entry(entry, root);
+				}));
+				self.weight = ko.observable(data.weight);
+				self.bottlesPerDay = ko.observable(data.bottlesPerDay);
+				self.mlPerBottle = ko.computed(function(){
+					var value = self.weight() / 1000 * 150 / self.bottlesPerDay();
+					value = Math.round( value / 5 ) * 5;
+					return value
+				});
+				self.dailyFeedGoal = ko.computed(function(){
+					return self.weight() / 1000 * 150
+				});
+				self.totalFed = ko.computed(function(){
+					var total = 0;
+					for(var i=0; i<self.hours().length; i++) {
+						var fed = parseInt( self.hours()[i].fed() );
+						fed = isNaN(fed) ? 0 : fed;
 
-		var addDay = function() {
-			$day = $('.day.template:first').clone().removeClass('template');
-			daysNo = $('.day').length;
+						var formula = parseInt( self.hours()[i].formula() );
+						formula = isNaN(formula) ? 0 : formula;
 
-			$('h2', $day).html('Day ' + daysNo);
-			$body = $('.day-body', $day)
-			$row = $('.day-row', $body)
-			for(i=2;i<=24;i++) {
-				$row
-					.clone()
-					.find('.day-cell--time')
-						.html(i)
-						.end()
-					.appendTo($body)
+						total += fed + formula
+					}
+					return total;
+				});
 			}
 
-			$day.prependTo('#chart');
+			var Entry = function(data,root) {
+				var self = this;
+				self.time = data.time;
+				self.pumped = ko.observable( data.pumped );
+				self.fed = ko.observable( data.fed );
+				self.formula = ko.observable( data.formula );
+				self.pipi = ko.observable( data.pipi );
+				self.caca = ko.observable( data.caca );
+				self.saveData = function(a,b,c){
+					// console.log(data)
+					saveData(root.days());
+				}
+			}
 
-			currentWeight = $('.day:first').find('.weight').html();
-			currentWeight = parseInt(currentWeight) || 0;
-			$('.weight', $day).html(currentWeight).blur();
+			var viewModel = function(data) {
+				var self = this;
+				self.days = ko.observableArray($.map(data, function(day){
+					return new Day(day, self);
+				}));
+				self.addDay = function(){
+					var hours=[];
+					for(var i=0; i<24; i++) {
+						hours.push({
+							"time":(i+1),
+							"pumped":"",
+							"fed":"",
+							"formula":"",
+							"pipi":false,
+							"caca":false
+						});
+					}
+					self.days.unshift(
+						new Day({
+							title: 'asd',
+							bottlesPerDay: 8,
+							weight: 3780,
+							hours: hours
+						}),
+						self
+					);
+					saveData(self.days());
+				}
+			}
 
-			saveData();
+			ko.applyBindings( new viewModel(data) );
 		}
 
-		var updateStats = function(e) {
-			$parent = $(e.target).parents('.day');
-			$weight=$('.weight', $parent);
-			weight = parseInt($weight.html());
-			$noBottles=$('.noBottles', $parent);
-			noBottles = parseInt( $noBottles.html() );
-			$mlPerBottle=$('.mlPerBottle', $parent);
-			mlPerBottle = parseInt( $mlPerBottle.html() );
-			$mlAte=$('.mlAte', $parent);
 
 
-			$mlPerBottle.html( Math.round( weight/1000*150/noBottles ) );
 
-			totalToEat = mlPerBottle * noBottles;
-			totalAte = 0;
-			$('.day-cell--fed, .day-cell--formula', $parent).each(function(i){
-				var ammount = parseInt( $(this).html() ) || 0;
-				totalAte += ammount;
-			});
 
-			$mlAte.html( totalAte + "ml out of " + totalToEat + "ml" );
-
-			saveData();
+		var formatNumber = function(number) {
+			number = parseInt(number);
+			if(isNaN(number)) {
+				return ""
+			}
+			if(!number) {
+				return ""
+			}
+			return number
 		}
+
+
+
+
 
 		var loadData = function(id) {
 			$.post(
@@ -138,26 +177,37 @@
 					id: id
 				},
 				function( data ) {
-					serverData = $('<div/>').html(data).text(); // decode the html
-					serverData = serverData != "" ? serverData : "";
-
-					if(serverData) {
-						$('#chart').html( serverData );
-						$('.weight').blur();
+					data = $.parseJSON(data)
+					if(data.code == 200) {
+						data = $.parseJSON(data.result);
+						initTemplate( data.days )
+					} else {
+						console.error(data.result);
 					}
 				}
 			);
 		}
-		var saveData = function() {
-			var chartData = $.trim($('#chart').html());
 
+
+
+
+
+		var saveData = function(days) {
 			$.post(
 				"./saveData.php",
 				{
 					id : "<? echo $_GET['id']; ?>",
-					chartData: chartData
+					data: ko.toJSON({days: days})
+				},
+				function( data) {
+					console.log( "Response when saving", data )
 				}
 			);
 		}
+
+
+
+
+
 	</script>
 </html>
