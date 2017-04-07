@@ -7,6 +7,7 @@ body {
 
 /* TOOLS */
 .sticky {
+    background-color: #fff;
     position:         sticky;
     position:     -ms-sticky;
     position:    -moz-sticky;
@@ -16,6 +17,7 @@ body {
 
 /* PAGE HEADER */
 #header {
+    opacity: 0;
     background: #6a39ff;
     line-height: 40px;
     overflow: hidden;
@@ -54,31 +56,34 @@ h1 {
 }
 
 /* DAY TOP */
-.day-top {
-    background-color: #fff;
+.day__top {
     top: 0;
     z-index: 10;
+    padding: 10px 0 0;
 }
-.day-top h2 {
+.day__top h2 {
+    display: flex;
     font-size: 1.2em;
+    justify-content: space-between;
     margin: 0;
-    padding: 10px 0;
+    padding: 0;
 }
-.day-head {
+.day__head {
+    margin-top: 20px;
     border-top: 1px solid #dedede;
     font-size: 1em;
     font-weight: bold;
 }
 
 /* DAY TABLE */
-.day-row {
+.day__row {
     border-left: 1px solid #dedede;
     display: flex;
 }
-.day-row:nth-child(even) {
+.day__row:nth-child(even) {
     background-color: #f7f7f7;
 }
-.day-cell {
+.day__cell {
     border-bottom: 1px solid #dedede;
     border-right: 1px solid #dedede;
     flex: 1 1 auto;
@@ -87,7 +92,7 @@ h1 {
     position: relative;
     text-align: center;
 }
-.day-cell .number {
+.day__cell .number {
     background-color: transparent;
     border: 0 none;
     box-sizing: border-box;
@@ -99,14 +104,14 @@ h1 {
     width: 100%;
 }
 
-.day-cell .checkbox {
+.day__cell .checkbox {
     -webkit-appearance: none;
     height: 30px;
     margin: 0;
     opacity: 0;
     width: 100%;
 }
-.day-cell .checkbox + span {
+.day__cell .checkbox + span {
     height: 30px;
     left: 0;
     line-height: 30px;
@@ -116,42 +121,42 @@ h1 {
     right: 0;
     text-align: center;
 }
-.day-cell .checkbox:checked + span {
+.day__cell .checkbox:checked + span {
     opacity: 1;
 }
 
-.day-cell--pipi,
-.day-cell--caca {
+.day__cell--pipi,
+.day__cell--caca {
     flex: 0 0 auto;
     font-size: 16px;
     width: 40px;
 }
 
-.day-row:not(.day-head) .day-cell--time {
+.day__row:not(.day__head) .day__cell--time {
     font-size: 12px;
 }
-.day-cell--time {
+.day__cell--time {
     flex: 0 0 auto;
     width: 70px;
 }
-.day-cell--pumped,
-.day-cell--breastFed,
-.day-cell--fed,
-.day-cell--formula {
+.day__cell--pumped,
+.day__cell--breastFed,
+.day__cell--fed,
+.day__cell--formula {
     flex: 1 1 auto;
     width: calc(20vw); /*47 is one third of all borders' width, body padding and fixed cells' width*/
 }
 
-.day-cell--pipi.js-toggle-visible:after {
+.day__cell--pipi.js-toggle-visible:after {
     content: '💧';
 }
-.day-cell--caca.js-toggle-visible:after {
+.day__cell--caca.js-toggle-visible:after {
     content: '💩';
 }
 
 
 /* DAY FOOTER */
-.day-foot {
+.day__foot {
     /* display: flex; */
     /* justify-content: space-between; */
     padding-top: 10px;
