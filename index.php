@@ -52,10 +52,10 @@
 					<button type="button" data-bind="click: addRecord">Add Record</button>
 					<div class="day__stats">
 						<div class="day__stats__row">
-							💪<input type="number" step="1" data-bind="value: weight" /> grams
+							💪<input type="number" step="1" data-bind="value: weight, event: { change: function() { bbc.saveData(); } }" /> grams
 						</div>
 						<div class="day__stats__row">
-							🍼<input type="number" step="1" data-bind="value: bottlesPerDay" /> per day
+							🍼<input type="number" step="1" data-bind="value: bottlesPerDay, event: { change: function() { bbc.saveData(); } }" /> per day
 						</div>
 					</div>
 				</div>
