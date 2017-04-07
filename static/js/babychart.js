@@ -49,7 +49,7 @@ var bbc = {
             self.date = moment(data.date, 'YYYYMMDD').format('YYYYMMDD');;
         }
 
-        self.title = moment(self.date, 'YYYYMMDD').format('Do MMM');
+        self.title = moment(self.date, 'YYYYMMDD').format('Do MMMM');
 
 
         var prevBottlesPerDay = 0;
