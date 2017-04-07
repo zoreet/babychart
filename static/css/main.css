@@ -9,12 +9,6 @@ body {
     position:    -moz-sticky;
     position: -webkit-sticky;
 }
-.editing .sticky {
-    position: fixed;
-}
-.template {
-    display: none;
-}
 
 #header {
     background: #6a39ff;

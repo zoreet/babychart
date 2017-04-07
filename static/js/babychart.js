@@ -203,9 +203,6 @@ var bbc = {
             return bbc.dayTemplate
         })();
 
-        console.log(dt);
-
-
         if (index) {
             dt.title = index + 1
         } else {
