@@ -42,25 +42,25 @@ var bbc = {
         self.records = ko.observableArray(data.records);
         self.weight = data.weight;
 
-    	if( bbc.model && bbc.model.days().length ) {
-    		prevDate = bbc.model.days()[0].date;
-    		self.date = moment(prevDate,'YYYYMMDD').add(1, 'days');
-    	} else {
-    		self.date = moment(data.date, 'YYYYMMDD').format('YYYYMMDD');;
-    	}
+        if (bbc.model && bbc.model.days().length) {
+            prevDate = bbc.model.days()[0].date;
+            self.date = moment(prevDate, 'YYYYMMDD').add(1, 'days');
+        } else {
+            self.date = moment(data.date, 'YYYYMMDD').format('YYYYMMDD');;
+        }
 
         self.title = moment(self.date, 'YYYYMMDD').format('Do MMM');
 
 
         var prevBottlesPerDay = 0;
-        if( bbc.model && bbc.model.days().length )
-        	prevBottlesPerDay = bbc.model.days()[0].bottlesPerDay();
+        if (bbc.model && bbc.model.days().length)
+            prevBottlesPerDay = bbc.model.days()[0].bottlesPerDay();
         self.bottlesPerDay = ko.observable(prevBottlesPerDay ? prevBottlesPerDay : data.bottlesPerDay);
 
         self.addRecord = function(e) {
-        	rt = (function(){
-        		return bbc.recordTemplate;
-        	})();
+            rt = (function() {
+                return bbc.recordTemplate;
+            })();
 
             // we add the time after we finish feeding her
             // and normally that takes 20 minutes
