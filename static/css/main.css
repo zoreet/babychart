@@ -13,6 +13,10 @@ body {
     position:    -moz-sticky;
     position: -webkit-sticky;
 }
+.small {
+    font-size:  0.8em;
+    font-weight: normal;
+}
 
 
 /* PAGE HEADER */
@@ -67,6 +71,10 @@ h1 {
     margin: 0;
     padding: 0;
 }
+.day__subtitle {
+    display: flex;
+    justify-content: space-between;
+}
 .day__head {
     margin-top: 20px;
     border-top: 1px solid #dedede;
@@ -79,6 +87,7 @@ h1 {
     border-left: 1px solid #dedede;
     display: flex;
 }
+.day__top .day__row,
 .day__row:nth-child(even) {
     background-color: #f7f7f7;
 }

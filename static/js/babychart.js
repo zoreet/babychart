@@ -32,16 +32,56 @@ var bbc = {
     },
 
 
-
+    model: null,
     initTemplate: function() {
         bbc.model = new bbc.Model(bbc.days);
         ko.applyBindings(bbc.model);
     },
-    model: null,
+    Model: function(data) {
+        var self = this;
+        self.days = ko.observableArray([]);
+        $.each(data, function() {
+            self.days.push(new bbc.Day(this));
+        })
+    },
     Day: function(data) {
         var self = this;
-        self.records = ko.observableArray(data.records);
-        self.weight = ko.observable(data.weight);
+
+        self.addRecord = function() {
+            rt = JSON.parse(JSON.stringify(bbc.recordTemplate));
+
+            // we add the time after we finish feeding her
+            // and normally that takes 20 minutes
+            // to make it easier to read I'm going to round to the nearest 15 minutes
+            var time = moment().subtract('20', 'minutes');
+            minutes = 15 * Math.round(time.minute() / 15);
+            time.minute(minutes);
+            rt.time = time.format('HH:mm');
+
+            self.records.push(new bbc.Record(rt));
+            if (bbc.model.days().length) { // when we initialize the first day, this is empty
+                bbc.saveData();
+            }
+        }
+
+        self.records = ko.observableArray();
+        if (!data.records.length) {
+            self.addRecord();
+        }
+        // self.root.addRecord();
+        $.each(data.records, function() {
+            self.records.push(new bbc.Record(this));
+        })
+
+        if( data.weight ) {
+            self.weight = ko.observable( data.weight );
+        } else {
+            if( bbc.model.days().length ) {
+                self.weight = ko.observable( bbc.model.days()[0].weight() );
+            } else {
+                self.weight = ko.observable( 1 );
+            }
+        }
 
 
         if (bbc.model && bbc.model.days().length) {
@@ -58,28 +98,21 @@ var bbc = {
             prevBottlesPerDay = bbc.model.days()[0].bottlesPerDay();
         self.bottlesPerDay = ko.observable(prevBottlesPerDay ? prevBottlesPerDay : data.bottlesPerDay);
 
+        self.totalFed = ko.computed(function() {
+            var total = 0;
+            $.each(self.records(), function() {
+                total +=
+                    parseInt(this.breastFed()) +
+                    parseInt(this.formula()) +
+                    parseInt(this.fed());
+            });
+            return total;
+        });
+        self.feedGoal = ko.computed(function() {
+            return parseInt(self.weight()) / 1000 * 150
+        })
 
-        self.addRecord = function(e) {
-            rt = JSON.parse(JSON.stringify(bbc.recordTemplate));
 
-            // we add the time after we finish feeding her
-            // and normally that takes 20 minutes
-            // to make it easier to read I'm going to round to the nearest 15 minutes
-            var time = moment().subtract('20', 'minutes');
-            minutes = 15 * Math.round(time.minute() / 15);
-            time.minute(minutes);
-            rt.time = time.format('HH:mm');
-
-            self.records.push(rt);
-            bbc.saveData()
-        }
-        self.removeRecord = function() {
-            var response = window.confirm('Are you sure you want to remove this record?');
-            if (response) {
-                self.records.remove(this);
-                bbc.saveData();
-            }
-        }
     },
     Record: function(data) {
         var self = this;
@@ -90,13 +123,6 @@ var bbc = {
         self.formula = ko.observable(data.formula);
         self.pipi = ko.observable(data.pipi);
         self.caca = ko.observable(data.caca);
-    },
-    Model: function(data) {
-        var self = this;
-        self.saveData = function(e) {}
-        self.days = ko.observableArray($.map(bbc.days, function(day) {
-            return new bbc.Day(day);
-        }));
     },
 
 
@@ -127,6 +153,7 @@ var bbc = {
 
     saveData: function() {
         var data = bbc.model.days();
+
         var code = bbc.validateData(data, true, true);
         if (code < 0) {
             alert("The data is invalid and I can't save it. Error " + code);
@@ -204,7 +231,7 @@ var bbc = {
 
         data = JSON.parse(JSON.stringify(bbc.dayTemplate))
 
-        if(!index) {
+        if (!index) {
             bbc.model.days.unshift(new bbc.Day(data));
         }
         bbc.saveData();
