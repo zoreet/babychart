@@ -61,6 +61,15 @@ var bbc = {
         	rt = (function(){
         		return bbc.recordTemplate;
         	})();
+
+            // we add the time after we finish feeding her
+            // and normally that takes 20 minutes
+            // to make it easier to read I'm going to round to the nearest 15 minutes
+            var time = moment().subtract('20', 'minutes');
+            minutes = 15 * Math.round(time.minute() / 15);
+            time.minute(minutes);
+            rt.time = time.format('HH:mm');
+
             self.records.push(bbc.recordTemplate);
             bbc.saveData()
         }
