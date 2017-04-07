@@ -58,6 +58,9 @@ var bbc = {
         self.bottlesPerDay = ko.observable(prevBottlesPerDay ? prevBottlesPerDay : data.bottlesPerDay);
 
         self.addRecord = function(e) {
+        	rt = (function(){
+        		return bbc.recordTemplate;
+        	})();
             self.records.push(bbc.recordTemplate);
             bbc.saveData()
         }
