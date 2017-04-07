@@ -22,10 +22,11 @@
 					<h2><span data-bind="text: title"></span></h2>
 					<div>Day <span data-bind="text: $root.days().length - $index()"></span></div>
 					<div class="day-head day-row" data-bind="visible: records().length > 0">
-						<div class="day-cell day-cell--time">⏰</div>
-						<div class="day-cell day-cell--pumped">Pumped</div>
-						<div class="day-cell day-cell--fed">Fed</div>
-						<div class="day-cell day-cell--formula">Formula</div>
+						<div class="day-cell day-cell--time">🕑</div>
+						<div class="day-cell day-cell--pumped">⛽️</div>
+						<div class="day-cell day-cell--breastFed">👩</div>
+						<div class="day-cell day-cell--fed">🍼</div>
+						<div class="day-cell day-cell--formula">🍼F</div>
 						<div class="day-cell day-cell--pipi">💧</div>
 						<div class="day-cell day-cell--caca">💩</div>
 					</div>
@@ -34,6 +35,7 @@
 					<div class="day-row">
 						<div class="day-cell day-cell--time"><input step="1" type="time" data-bind="value: time, event: { change: function() { bbc.saveData(); } }" /></div>
 						<div class="day-cell day-cell--pumped"><input class="number" step="1" type="number" data-bind="value: pumped, event: { change: function() { bbc.saveData(); } }" /></div>
+						<div class="day-cell day-cell--breastFed"><input class="number" step="1" type="number" data-bind="value: breastFed, event: { change: function() { bbc.saveData(); } }" /></div>
 						<div class="day-cell day-cell--fed"><input class="number" step="1" type="number" data-bind="value: fed, event: { change: function() { bbc.saveData(); } }" /></div>
 						<div class="day-cell day-cell--formula"><input class="number" step="1" type="number" data-bind="value: formula, event: { change: function() { bbc.saveData(); } }" /></div>
 						<div class="day-cell day-cell--pipi"><input type="checkbox" class="checkbox" data-bind="checked: pipi, event: { change: function() { bbc.saveData(); } }" /><span>💧<span></div>

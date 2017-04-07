@@ -14,6 +14,7 @@ var bbc = {
     recordTemplate: {
         time: "13:22", // hh:mm
         pumped: 0,
+        breastFed: 0,
         fed: 0,
         formula: 0,
         pipi: false,
@@ -40,7 +41,8 @@ var bbc = {
     Day: function(data) {
         var self = this;
         self.records = ko.observableArray(data.records);
-        self.weight = data.weight;
+        self.weight = ko.observable(data.weight);
+
 
         if (bbc.model && bbc.model.days().length) {
             prevDate = bbc.model.days()[0].date;
@@ -48,7 +50,6 @@ var bbc = {
         } else {
             self.date = moment(data.date, 'YYYYMMDD').format('YYYYMMDD');;
         }
-
         self.title = moment(self.date, 'YYYYMMDD').format('Do MMMM');
 
 
@@ -57,10 +58,9 @@ var bbc = {
             prevBottlesPerDay = bbc.model.days()[0].bottlesPerDay();
         self.bottlesPerDay = ko.observable(prevBottlesPerDay ? prevBottlesPerDay : data.bottlesPerDay);
 
+
         self.addRecord = function(e) {
-            rt = (function() {
-                return bbc.recordTemplate;
-            })();
+            rt = JSON.parse(JSON.stringify(bbc.recordTemplate));
 
             // we add the time after we finish feeding her
             // and normally that takes 20 minutes
@@ -70,7 +70,7 @@ var bbc = {
             time.minute(minutes);
             rt.time = time.format('HH:mm');
 
-            self.records.push(bbc.recordTemplate);
+            self.records.push(rt);
             bbc.saveData()
         }
         self.removeRecord = function() {
@@ -86,6 +86,7 @@ var bbc = {
         self.time = data.time;
         self.pumped = ko.observable(data.pumped);
         self.fed = ko.observable(data.fed);
+        self.breastFed = ko.observable(data.breastFed);
         self.formula = ko.observable(data.formula);
         self.pipi = ko.observable(data.pipi);
         self.caca = ko.observable(data.caca);
@@ -180,6 +181,7 @@ var bbc = {
                 for (record in data[day].records)
                     if (!data[day].records[record].hasOwnProperty('time') ||
                         !data[day].records[record].hasOwnProperty('pumped') ||
+                        !data[day].records[record].hasOwnProperty('breastFed') ||
                         !data[day].records[record].hasOwnProperty('fed') ||
                         !data[day].records[record].hasOwnProperty('formula') ||
                         !data[day].records[record].hasOwnProperty('pipi') ||
@@ -199,16 +201,12 @@ var bbc = {
         if (!index) {
             index = 0;
         }
-        var dt = (function() {
-            return bbc.dayTemplate
-        })();
 
-        if (index) {
-            dt.title = index + 1
-        } else {
-            dt.title = bbc.model.days().length + 1;
+        data = JSON.parse(JSON.stringify(bbc.dayTemplate))
+
+        if(!index) {
+            bbc.model.days.unshift(new bbc.Day(data));
         }
-        bbc.model.days.unshift(new bbc.Day(dt));
         bbc.saveData();
     },
     removeDay: function(index) {},

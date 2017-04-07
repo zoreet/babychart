@@ -81,6 +81,7 @@ h1 {
 .day-cell {
     border-bottom: 1px solid #dedede;
     border-right: 1px solid #dedede;
+    flex: 1 1 auto;
     height: 30px;
     line-height: 30px;
     position: relative;
@@ -129,12 +130,16 @@ h1 {
 .day-row:not(.day-head) .day-cell--time {
     font-size: 12px;
 }
-.day-cell--time,
+.day-cell--time {
+    flex: 0 0 auto;
+    width: 70px;
+}
 .day-cell--pumped,
+.day-cell--breastFed,
 .day-cell--fed,
 .day-cell--formula {
     flex: 1 1 auto;
-    width: calc(25vw); /*47 is one third of all borders' width, body padding and fixed cells' width*/
+    width: calc(20vw); /*47 is one third of all borders' width, body padding and fixed cells' width*/
 }
 
 .day-cell--pipi.js-toggle-visible:after {
