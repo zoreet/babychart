@@ -3,6 +3,9 @@ body {
     margin: 0;
     padding: 0;
 }
+
+
+/* TOOLS */
 .sticky {
     position:         sticky;
     position:     -ms-sticky;
@@ -10,6 +13,8 @@ body {
     position: -webkit-sticky;
 }
 
+
+/* PAGE HEADER */
 #header {
     background: #6a39ff;
     line-height: 40px;
@@ -37,16 +42,18 @@ h1 {
 }
 
 
+/* In case we have more pages ;) */
 .panel {
     padding: 0 10px 10px;
 }
 
 
+/* DAY */
 .day {
     margin-bottom: 40px;
 }
 
-
+/* DAY TOP */
 .day-top {
     background-color: #fff;
     top: 0;
@@ -63,6 +70,7 @@ h1 {
     font-weight: bold;
 }
 
+/* DAY TABLE */
 .day-row {
     border-left: 1px solid #dedede;
     display: flex;
@@ -137,23 +145,10 @@ h1 {
 }
 
 
-
+/* DAY FOOTER */
 .day-foot {
     /* display: flex; */
     /* justify-content: space-between; */
     padding-top: 10px;
     bottom: 0;
-}
-/******************************************************************************
-JS
-.*****************************************************************************/
-.js-toggle-visible {
-    cursor: pointer;
-}
-.js-toggle-visible:after {
-    display: block;
-    opacity: 0;
-}
-.is-visible:after {
-    opacity: 1;
 }
