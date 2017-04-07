@@ -117,7 +117,6 @@ h1 {
     opacity: 1;
 }
 
-.day-cell--time,
 .day-cell--pipi,
 .day-cell--caca {
     flex: 0 0 auto;
@@ -128,11 +127,12 @@ h1 {
 .day-row:not(.day-head) .day-cell--time {
     font-size: 12px;
 }
+.day-cell--time,
 .day-cell--pumped,
 .day-cell--fed,
 .day-cell--formula {
     flex: 1 1 auto;
-    width: calc(33vw); /*47 is one third of all borders' width, body padding and fixed cells' width*/
+    width: calc(25vw); /*47 is one third of all borders' width, body padding and fixed cells' width*/
 }
 
 .day-cell--pipi.js-toggle-visible:after {
@@ -144,27 +144,11 @@ h1 {
 
 
 
-.day-stats {
+.day-foot {
     /* display: flex; */
     /* justify-content: space-between; */
     padding-top: 10px;
-}
-.day-stats--row {
-    margin-bottom: 5px;
-}
-.day-stats__editable {
-    border-bottom: 1px solid;
-    display: inline-block;
-    height: 20px;
-    line-height: 20px;
-    overflow: hidden;
-    padding: 0 5px;
-    text-align: right;
-    vertical-align: top;
-    white-space: nowrap;
-}
-.weight {
-    min-width: 40px;
+    bottom: 0;
 }
 /******************************************************************************
 JS

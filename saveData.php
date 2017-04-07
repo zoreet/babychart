@@ -9,7 +9,7 @@
 		if($result !== false) {
 			//success
 			echo json_encode(array(
-	        	result => "Data saved!",
+	        	result => "Data saved! $result $data, $id",
 	        	code => 200
 	    	));
 		} else {
