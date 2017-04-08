@@ -88,7 +88,7 @@ var bbc = {
             prevDate = bbc.model.days()[0].date;
             self.date = moment(prevDate, 'YYYYMMDD').add(1, 'days');
         } else {
-            self.date = moment(data.date, 'YYYYMMDD').format('YYYYMMDD');;
+            self.date = moment(data.date, 'YYYYMMDD');
         }
         self.title = moment(self.date, 'YYYYMMDD').format('Do MMMM');
 
