@@ -22,13 +22,14 @@ body {
 /* PAGE HEADER */
 #header {
     background: #6a39ff;
+    display: flex;
+    justify-content: space-between;
     line-height: 40px;
     overflow: hidden;
     padding: 20px 10px;
 }
 h1 {
     color: #ffd4c4;
-    float: left;
     margin: 0;
     text-align: center;
     text-transform: capitalize;
@@ -37,7 +38,6 @@ h1 {
     background-color: rgba(255,255,255,.5);
     border-radius: 50%;
     color: #6a39ff;
-    float: right;
     font-size: 24px;
     height: 30px;
     line-height: 26px;
