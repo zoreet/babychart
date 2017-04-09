@@ -22,6 +22,21 @@ var bbc = {
 
 
     init: function(name, bday) {
+        if(!name) {
+            name = prompt("Baby's name");
+            if(name) {
+                window.location.href = window.location.origin + "/?name=" + name;
+            }
+            return;
+        }
+        if(!bday) {
+            bday = window.prompt("When was " + name + " born? Format YYYYMMDD");
+            if(bday) {
+                window.location.href = window.location.origin + "/?name=" + name + "&bday=" + bday;
+            }
+            return;
+        }
+
         bbc.name = name;
         bbc.bday = bday;
         bbc.loadData();
