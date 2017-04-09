@@ -23,7 +23,7 @@ var bbc = {
 
     init: function(name, bday) {
         if(!name) {
-            name = prompt("Baby's name");
+            name = prompt("Baby's name").toLowerCase();
             if(name) {
                 window.location.href = window.location.origin + "/?name=" + name;
             }
