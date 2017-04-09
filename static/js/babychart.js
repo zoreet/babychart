@@ -2,17 +2,16 @@ var bbc = {
 
 
 
-    id: null,
+    name: null,
+    bday: null,
     days: [],
-    currentDay: 0, //index of days
     dayTemplate: {
-        date: '20170322',
         bottlesPerDay: 8,
         weight: 0,
         records: []
     },
     recordTemplate: {
-        time: "13:22", // hh:mm
+        time: "", // hh:mm
         pumped: 0,
         breastFed: 0,
         fed: 0,
@@ -22,8 +21,9 @@ var bbc = {
     },
 
 
-    init: function(id) {
-        bbc.id = id;
+    init: function(name, bday) {
+        bbc.name = name;
+        bbc.bday = bday;
         bbc.loadData();
 
         $('#add-day').click(function(e) {
@@ -33,70 +33,83 @@ var bbc = {
 
 
     model: null,
-    initTemplate: function() {
-        bbc.model = new bbc.Model(bbc.days);
+    initTemplate: function(days) {
+        bbc.model = new bbc.Model(days);
         ko.applyBindings(bbc.model);
     },
     Model: function(data) {
         var self = this;
         self.days = ko.observableArray([]);
-        $.each(data, function() {
-            self.days.push(new bbc.Day(this));
-        })
+
+        var daysSinceBirth = moment().diff(moment(bbc.bday, 'YYYYMMDD'), 'days') + 1;
+        var daysNotLogged = daysSinceBirth - data.length
+
+        $.each(data, function(i) {
+            self.days.push(new bbc.Day(this, i + daysNotLogged));
+        });
+
+        if (daysNotLogged == 1) {
+            // if it's more then one day maybe you stopped keeping track
+            // imagine you want to look at the data in one month's time and I add 30 empty days
+            // still if the user skips one day, she can still add days from the button in the header
+            var dt = JSON.parse(JSON.stringify(bbc.dayTemplate))
+            self.days.unshift(new bbc.Day(dt, 0));
+        }
+
     },
-    Day: function(data) {
+    Day: function(data, dayNo) {
         var self = this;
 
-        self.addRecord = function() {
-            rt = JSON.parse(JSON.stringify(bbc.recordTemplate));
 
-            // we add the time after we finish feeding her
-            // and normally that takes 20 minutes
-            // to make it easier to read I'm going to round to the nearest 15 minutes
-            var time = moment().subtract('20', 'minutes');
-            minutes = 15 * Math.round(time.minute() / 15);
-            time.minute(minutes);
-            rt.time = time.format('HH:mm');
+        self.title = moment().subtract(dayNo, 'days').format('Do MMMM');
 
-            self.records.push(new bbc.Record(rt));
-            if (bbc.model.days().length) { // when we initialize the first day, this is empty
-                bbc.saveData();
-            }
-        }
 
-        self.records = ko.observableArray();
-        if (!data.records.length) {
-            self.addRecord();
-        }
-        // self.root.addRecord();
-        $.each(data.records, function() {
-            self.records.push(new bbc.Record(this));
-        })
-
-        if( data.weight ) {
-            self.weight = ko.observable( data.weight );
+        if (data.weight) {
+            self.weight = ko.observable(data.weight);
         } else {
-            if( bbc.model.days().length ) {
-                self.weight = ko.observable( bbc.model.days()[0].weight() );
+            if (bbc.model && bbc.model.days().length) {
+                self.weight = ko.observable(bbc.model.days()[0].weight());
             } else {
-                self.weight = ko.observable( 1 );
+                self.weight = ko.observable(1);
             }
         }
-
-
-        if (bbc.model && bbc.model.days().length) {
-            prevDate = bbc.model.days()[0].date;
-            self.date = moment(prevDate, 'YYYYMMDD').add(1, 'days');
-        } else {
-            self.date = moment(data.date, 'YYYYMMDD');
-        }
-        self.title = moment(self.date, 'YYYYMMDD').format('Do MMMM');
 
 
         var prevBottlesPerDay = 0;
         if (bbc.model && bbc.model.days().length)
             prevBottlesPerDay = bbc.model.days()[0].bottlesPerDay();
         self.bottlesPerDay = ko.observable(prevBottlesPerDay ? prevBottlesPerDay : data.bottlesPerDay);
+
+
+
+
+        // RECORDS
+        self.records = ko.observableArray();
+        self.addRecord = function() {
+            rt = JSON.parse(JSON.stringify(bbc.recordTemplate));
+
+            // we add the time after we finish feeding her
+            // and normally that takes 20 minutes
+            // to make it easier to read I'm going to round it down to the nearest 15 minutes
+            var time = moment().subtract('20', 'minutes');
+            minutes = 15 * Math.floor(time.minute() / 15);
+            time.minute(minutes);
+            rt.time = time.format('HH:mm');
+
+            self.records.push(new bbc.Record(rt));
+            if (bbc.model && bbc.model.days().length) { // when we initialize the first day, this is empty, so there's nothing to save
+                bbc.saveData();
+            }
+        }
+
+        if (!data.records.length) { // have one record in by default, to make it easier to start loggin the food
+            self.addRecord();
+        } else {
+            $.each(data.records, function() {
+                self.records.push(new bbc.Record(this));
+            });
+        }
+
 
         self.totalFed = ko.computed(function() {
             var total = 0;
@@ -108,6 +121,8 @@ var bbc = {
             });
             return total;
         });
+
+
         self.feedGoal = ko.computed(function() {
             return parseInt(self.weight()) / 1000 * 150
         })
@@ -130,15 +145,14 @@ var bbc = {
     loadData: function(id) {
         $.post(
             "./loadData.php", {
-                id: bbc.id
+                id: bbc.name
             },
             function(data) {
                 data = $.parseJSON(data)
                 if (data.code == 200) {
                     var days = $.parseJSON(data.result);
                     if (bbc.validateData(days)) {
-                        bbc.days = days;
-                        bbc.initTemplate();
+                        bbc.initTemplate(days);
                     } else {
                         alert("The data on the server looks broken. I won't load it so nothing breaks further");
                         console.log(data, days);
@@ -163,7 +177,7 @@ var bbc = {
 
         $.post(
             "./saveData.php", {
-                id: bbc.id,
+                id: bbc.name,
                 data: ko.toJSON(bbc.model.days())
             },
             function(data) {
@@ -197,9 +211,8 @@ var bbc = {
 
             if ( //one of the following is missing
                 !data[day].hasOwnProperty('bottlesPerDay') ||
-                !data[day].hasOwnProperty('date') ||
+                !data[day].hasOwnProperty('weight') ||
                 !data[day].hasOwnProperty('records')
-                // !data[day].hasOwnProperty('weight') // optional
             ) return -4
 
             if (data[day].records.constructor !== Array)
@@ -224,27 +237,15 @@ var bbc = {
 
 
 
-    addDay: function(index) {
-        if (!index) {
-            index = 0;
-        }
+    addDay: function() {
+        data = JSON.parse(JSON.stringify(bbc.dayTemplate));
 
-        data = JSON.parse(JSON.stringify(bbc.dayTemplate))
+        var daysSinceBirth = moment().diff(moment(bbc.bday, 'YYYYMMDD'), 'days');
+        var daysNotLogged = daysSinceBirth - bbc.model.days().length;
+        bbc.model.days.unshift(new bbc.Day(data, daysNotLogged));
 
-        if (!index) {
-            bbc.model.days.unshift(new bbc.Day(data));
-        }
         bbc.saveData();
-    },
-    removeDay: function(index) {},
-    showDay: function(index) {},
-
-
-
-    addRecord: function(index, day) {},
-    updateRecord: function(index, day) {},
-    removeRecord: function(index, day) {},
-    showRecord: function(index, day) {},
+    }
 
 
 

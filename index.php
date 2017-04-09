@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title><? echo $_GET['id'] ?></title>
+		<title><? echo $_GET['name'] ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="/static/css/main.css">
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -13,8 +13,8 @@
 	</head>
 	<body>
 		<div id="header">
+			<h1><? echo $_GET['name'] ?></h1>
 			<div id="add-day">+</div>
-			<h1><? echo $_GET['id'] ?></h1>
 		</div>
 		<section id="chart" class="panel" data-bind="foreach: days">
 			<div class="day">
@@ -70,7 +70,7 @@
 	<script type="text/javascript" src="/static/js/babychart.js"></script>
 	<script type="text/javascript">
 		$(function() {
-			bbc.init("<? echo $_GET['id'] ?>");
+			bbc.init("<? echo $_GET['name'] ?>", "<? echo $_GET['bday'] ?>");
 		});
 	</script>
 </html>
