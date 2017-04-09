@@ -45,6 +45,9 @@ var bbc = {
         var daysNotLogged = daysSinceBirth - data.length
 
         $.each(data, function(i) {
+            // a bit of cleaning for previous data format
+            delete this.date;
+
             self.days.push(new bbc.Day(this, i + daysNotLogged));
         });
 
